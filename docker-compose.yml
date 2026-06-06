@@ -1,0 +1,19 @@
+services:
+  tasks-exporter:
+    build: .
+    restart: unless-stopped
+    volumes:
+      # Mount your credentials and token from the host.
+      # credentials.json  → download from Google Cloud Console (OAuth 2.0 client secret)
+      # token.json        → generated on first run (see README / auth step below)
+      - ./credentials.json:/app/secrets/credentials.json:ro
+      - ./token.json:/app/secrets/token.json
+    environment:
+      GOOGLE_OAUTH_CREDENTIALS: /app/secrets/credentials.json
+      TOKEN_PATH: /app/secrets/token.json
+      EXPORT_FOLDER_NAME: ${EXPORT_FOLDER_NAME:-Google Tasks Exports}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
